@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using myfinance_web_netcore.Domain;
 using myfinance_web_netcore.Infrastructure;
 using myfinance_web_netcore.Models;
 
@@ -23,22 +24,42 @@ namespace myfinance_web_netcore.Services
 
         public void Excluir(int id)
         {
-            throw new NotImplementedException();
+            var item = _myFinanceDbContext.PlanoConta.Where(x => x.Id == id).First();
+            _myFinanceDbContext.Attach(item);
+            _myFinanceDbContext.Remove(item);
+            _myFinanceDbContext.SaveChanges();
         }
 
         public List<PlanoContaModel> ListarRegistros()
         {
-            throw new NotImplementedException();
+            var listaPlanoConta = _myFinanceDbContext.PlanoConta.ToList();
+            var lista = _mapper.Map<List<PlanoContaModel>>(listaPlanoConta);
+            return lista;
         }
 
         public PlanoContaModel RetornarRegistro(int id)
         {
-            throw new NotImplementedException();
+            var item = _myFinanceDbContext.PlanoConta.Where(x => x.Id == id).First();
+            var registro = _mapper.Map<PlanoContaModel>(item);
+            return registro;
         }
 
         public void Salvar(PlanoContaModel model)
         {
-            throw new NotImplementedException();
+            var dbSet = _myFinanceDbContext.PlanoConta;
+            var item = _mapper.Map<PlanoConta>(model);
+
+            if (item.Id == 0)
+            {
+                dbSet.Add(item);
+            }
+            else
+            {
+                dbSet.Attach(item);
+                _myFinanceDbContext.Entry(item).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            }
+
+            _myFinanceDbContext.SaveChanges();
         }
     }
 }
